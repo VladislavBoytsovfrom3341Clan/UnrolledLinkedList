@@ -1,7 +1,0 @@
-project(UnrolledLinkedList)
-set(SOURCE_OUT main.cpp)
-set(SOURCE_LIB UnrolledLinkedList.cpp UnrolledLinkedListNode.cpp)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../)
-add_library(UnrolledLL STATIC ${SOURCE_LIB})
-add_executable(main ${SOURCE_OUT})
-target_link_libraries(main UnrolledLL)

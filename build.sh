@@ -1,5 +1,5 @@
 mkdir temp
-cd temp
+cd ./temp
 cmake ../
 make
 cd ../
