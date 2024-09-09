@@ -27,9 +27,15 @@ public:
     void split(UnrolledLinkedListNode<T>* node);
 
     void pushBack(T value);
-
+    void popBack();
     //pastes a <value> on the <index> in the list
     void pasteAtIndex(T value, int index);
+
+    //removes node pointed by <node>
+    void removeNode(UnrolledLinkedListNode<T>* node);
+
+    //removes element at <index>, replacing the following
+    void removeAtIndex(int index);
 
     //prints the list by nodes
     void print();

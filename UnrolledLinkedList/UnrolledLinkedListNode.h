@@ -26,6 +26,9 @@ public:
     //deletes the node from linked list
     void remove();
 
+    //deletes <index> elem, moving nexto ones forward
+    void cut(const int index);
+
     //inserts the <value> on <index> positions 
     void insert(const T& value, const int index);
 

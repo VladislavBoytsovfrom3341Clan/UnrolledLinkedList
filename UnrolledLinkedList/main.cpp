@@ -37,8 +37,9 @@ int main()
     m.print();
     int ind;
     std::cin>>ind;
-
-    m.pasteAtIndex(999, ind);
+    m.removeAtIndex(ind);
+    m.removeAtIndex(ind);
+    //m.pasteAtIndex(999, ind);
     m.print();
-    std::cout<<m.find(ind);
+    //std::cout<<m.find(ind);
 }

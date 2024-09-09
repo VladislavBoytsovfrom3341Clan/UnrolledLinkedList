@@ -105,8 +105,9 @@ void UnrolledLinkedList<T>::split(UnrolledLinkedListNode<T>* node)
     //correcting pointers
     newNode->mNext = node->mNext;
     newNode->mPrev=node;
+    if(node->mNext!=nullptr)
+        node->mNext->mPrev=newNode;
     node->mNext=newNode;
-
     mNodeNum++;
 }
 
@@ -158,6 +159,75 @@ void UnrolledLinkedList<T>::pasteAtIndex(T value, int index)
         
         curPos->insert(value, index);
     }
+}
+
+template<typename T>
+void UnrolledLinkedList<T>::removeNode(UnrolledLinkedListNode<T>* node)
+{
+    if(node==nullptr)
+        return;
+
+    //repointing surrounding nodes
+    if(node->mPrev!=nullptr)
+        node->mPrev->mNext=node->mNext;
+    if(node->mNext!=nullptr)
+        node->mNext->mPrev=node->mPrev;
+
+    //repointing Head and Tail
+    if(node==mHead)
+        mHead=node->mNext;
+    if(node==mTail)
+        mTail=node->mPrev;
+        
+    node->remove();
+}
+
+template<typename T>
+void UnrolledLinkedList<T>::removeAtIndex(int index)
+{
+    if(mHead==nullptr)
+        return;
+    if(index<0)
+        throw std::invalid_argument("Invalid index");
+    UnrolledLinkedListNode<T>* curPos=mHead;
+
+    //searching for a proper node by index
+    while(curPos->mLength<=index and curPos->mNext!=nullptr)
+    {
+        index-=curPos->mLength;
+        curPos=curPos->mNext;
+    }
+    //too big index
+    if(index>curPos->mLength)
+        throw std::invalid_argument("Invalid index");
+    else
+    {
+        curPos->cut(index);
+
+        //if node was made empty, remove one
+        if(curPos->mLength==0)
+            removeNode(curPos);
+
+        /** if node has not enough elements
+        * replace elements with ones from next Node
+        * if it exists **/
+        if(curPos->mLength<mNodeSize/2 +1 and curPos->mNext!=nullptr)
+        {
+            if(curPos->mNext->mLength>0)
+            {
+                curPos->pushBack(curPos->mNext->mNodeArray[0]);
+                curPos->mNext->cut(0);
+            }
+            if(curPos->mNext->mLength==0)
+                removeNode(curPos->mNext);
+        }
+    }
+}
+
+template<typename T>
+void UnrolledLinkedList<T>::popBack()
+{
+    this->removeNode(mTail);
 }
 
 template<typename T>

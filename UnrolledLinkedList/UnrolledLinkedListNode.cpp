@@ -44,6 +44,16 @@ T& UnrolledLinkedListNode<T>::operator[] (const int index)
 }
 
 template<typename T>
+void UnrolledLinkedListNode<T>::cut(const int index)
+{
+    if(index<0 or index>=mLength)
+        throw std::length_error("Invalid index");
+    for(int i=0;i<mLength-1;i++)
+        mNodeArray[i]=mNodeArray[i+1];
+    mLength--;
+}
+
+template<typename T>
 void UnrolledLinkedListNode<T>::remove()
 {
     delete[] mNodeArray;
