@@ -1,6 +1,6 @@
 mkdir temp
 cd ./temp
-cmake ../
+cmake -B./ -S../
 make
 cd ../
 rm -r temp

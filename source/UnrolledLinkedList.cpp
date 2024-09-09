@@ -27,6 +27,7 @@ UnrolledLinkedList<T>::UnrolledLinkedList(std::vector<T> values, int optimalNode
             mNodeNum=1;
             continue;
         }
+
         //if node has empty space add to an end of the node
         if(mTail->mLength<mNodeSize)
             mTail->pushBack(value);
@@ -214,13 +215,19 @@ void UnrolledLinkedList<T>::removeAtIndex(int index)
         * if it exists **/
         if(curPos->mLength<mNodeSize/2 +1 and curPos->mNext!=nullptr)
         {
+            //replacing element from the next node
             if(curPos->mNext->mLength>0)
             {
                 curPos->pushBack(curPos->mNext->mNodeArray[0]);
                 curPos->mNext->cut(0);
             }
+
+            //removing next node if it is empty
             if(curPos->mNext->mLength==0)
                 removeNode(curPos->mNext);
+
+            /** Merging two nodes 
+             * is there are a few elements */
             else if(curPos->mNext->mLength+curPos->mLength<=mNodeSize)
             {
                 while(curPos->mNext->mLength>0)
@@ -245,12 +252,17 @@ void UnrolledLinkedList<T>::print()
 {
     UnrolledLinkedListNode<T>* cur=mHead;
     std::cout<<"Size: "<<mNodeSize<<std::endl;
+
+    //iterating on nodes
     for(int i=0; cur!=nullptr; i++)
     {
         std::cout<<"Node "<<i<<": ("<<cur->mLength<<") [";
+
+        //printing nodes array
         for(int j=0;j<cur->mLength;j++)
             std::cout<<"_"<<cur->mNodeArray[j];
         std::cout<<" ]"<<std::endl;
+
         cur=cur->mNext;
     }
 }
@@ -260,16 +272,22 @@ T& UnrolledLinkedList<T>::operator[] (int index)
 {
     if(index<0)
         throw std::length_error("Invalid index");
+    
     UnrolledLinkedListNode<T>* cur = mHead;
     if(mHead==nullptr)
         throw std::length_error("Empty list indexation");
+    
+    //getting proper node by index
     while(index>=cur->mLength and cur->mNext!=nullptr)
     {
         index-=cur->mLength;
         cur=cur->mNext;
     }
+
+    //too big index
     if(index>=cur->mLength)
         throw std::length_error("Invalid index");
+
     return cur->mNodeArray[index];
 }
 
@@ -280,5 +298,7 @@ int calculate_optimal_node_size(const int& num_elements, const int& element_size
     return cacheStringsAmount;
 }
 
+/** This realisation requires
+ * to instance the types for class */
 
 template class UnrolledLinkedList<int>;
