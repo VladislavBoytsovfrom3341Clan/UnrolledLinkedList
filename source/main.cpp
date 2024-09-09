@@ -1,6 +1,6 @@
 #include<iostream>
 #include<vector>
-#include"../include/UnrolledLinkedList.h"
+#include"UnrolledLinkedList.h"
 
 std::vector<int> getParts(std::string inp)
 {
