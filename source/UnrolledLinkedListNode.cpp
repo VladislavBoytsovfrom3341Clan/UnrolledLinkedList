@@ -48,7 +48,7 @@ void UnrolledLinkedListNode<T>::cut(const int index)
 {
     if(index<0 or index>=mLength)
         throw std::length_error("Invalid index");
-    for(int i=0;i<mLength-1;i++)
+    for(int i=index;i<mLength-1;i++)
         mNodeArray[i]=mNodeArray[i+1];
     mLength--;
 }

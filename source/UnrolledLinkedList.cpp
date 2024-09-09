@@ -143,7 +143,7 @@ void UnrolledLinkedList<T>::pasteAtIndex(T value, int index)
     else
     {
         //split the node if necessary
-        if(curPos->mLength>mNodeSize/2)
+        if(curPos->mLength>=mNodeSize)
         {
             split(curPos);
             if(mTail->mNext!=nullptr)
@@ -202,6 +202,7 @@ void UnrolledLinkedList<T>::removeAtIndex(int index)
         throw std::invalid_argument("Invalid index");
     else
     {
+        std::cout<<"ind: "<<index<<"\n";
         curPos->cut(index);
 
         //if node was made empty, remove one
@@ -220,6 +221,15 @@ void UnrolledLinkedList<T>::removeAtIndex(int index)
             }
             if(curPos->mNext->mLength==0)
                 removeNode(curPos->mNext);
+            else if(curPos->mNext->mLength+curPos->mLength<=mNodeSize)
+            {
+                while(curPos->mNext->mLength>0)
+                {
+                    curPos->pushBack(curPos->mNext->mNodeArray[0]);
+                    curPos->mNext->cut(0);
+                }
+                removeNode(curPos->mNext);
+            }
         }
     }
 }
