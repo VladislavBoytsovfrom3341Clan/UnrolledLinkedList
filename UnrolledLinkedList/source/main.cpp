@@ -28,17 +28,9 @@ int main()
     getline(std::cin, inp);
     std::vector<int> arr=getParts(inp);
     int optimalCapacity = calculate_optimal_node_size(arr.size(), sizeof(int));
-    UnrolledLinkedList<int> m(arr, optimalCapacity);
+    UnrolledLinkedList<int> m(arr, 6);
+    //m.resize(6);
     m.print();
-    for(auto v: arr)
-        m.pushBack(v);
-    //m.pushBack(99);
-    m.print();
-    //m.pasteAtIndex(999, 11);
-    //int ind;
-    //std::cin>>ind;
-    //m.removeAtIndex(ind);
-    m.resize(5);
-    m.print();
-    //std::cout<<m.find(ind);
+    
+    //UnrolledLinkedListNode<int>* nn = new UnrolledLinkedListNode<int>(7);
 }

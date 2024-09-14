@@ -11,6 +11,7 @@ private:
     UnrolledLinkedListNode<T>* mTail;
     int mNodeSize;
     int mNodeNum;
+    int size;
 
 public:
     UnrolledLinkedList(int optimalNodeSize);

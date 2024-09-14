@@ -27,11 +27,11 @@ void UnrolledLinkedListNode<T>::insert(const T& value, const int index)
 {
     if(index>=mCapacity)
         throw std::invalid_argument("Invalid index");
-    this->mLength++;
-
+    
     //moving all elements after index to 1 position to right
     for(int i=mLength; i>index;i--)
         mNodeArray[i]=mNodeArray[i-1];
+    this->mLength++;
     mNodeArray[index]=value;
 }
 
