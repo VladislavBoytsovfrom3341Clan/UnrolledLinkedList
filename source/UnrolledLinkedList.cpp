@@ -242,6 +242,41 @@ void UnrolledLinkedList<T>::removeAtIndex(int index)
 }
 
 template<typename T>
+void UnrolledLinkedList<T>::resize(int newNodeSize)
+{
+    if(newNodeSize==mNodeSize)
+        return;
+    if(newNodeSize<=0 or newNodeSize>this->length())
+        throw std::length_error("Invalid new node size");
+    
+    UnrolledLinkedListNode<T>* newHead = new UnrolledLinkedListNode<T>(newNodeSize);
+    UnrolledLinkedListNode<T>* cur = newHead;
+    int curIndex=0, newNodeNum=0;
+    for(int i=0; i<this->length(); i++)
+    {
+        if(curIndex>=newNodeSize)
+        {
+            UnrolledLinkedListNode<T>* newNode = new UnrolledLinkedListNode<T>(newNodeSize);
+            cur->mNext=newNode;
+            newNode->mPrev=cur;
+            cur=cur->mNext;
+            curIndex=0;
+            newNodeNum++;
+        }
+        cur->insert(this->operator[](i), curIndex++);
+    }
+    while(mHead!=nullptr)
+    {
+        mHead->remove();
+        mHead=mHead->mNext;
+    }
+    mHead=newHead;
+    mTail=cur;
+    mNodeSize=newNodeSize;
+    mNodeNum=newNodeNum;
+}
+
+template<typename T>
 void UnrolledLinkedList<T>::popBack()
 {
     this->removeNode(mTail);

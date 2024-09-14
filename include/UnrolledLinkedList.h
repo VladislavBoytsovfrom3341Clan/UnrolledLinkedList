@@ -31,6 +31,8 @@ public:
     //pastes a <value> on the <index> in the list
     void pasteAtIndex(T value, int index);
 
+    void resize(int newNodeSize);
+
     //removes node pointed by <node>
     void removeNode(UnrolledLinkedListNode<T>* node);
 
