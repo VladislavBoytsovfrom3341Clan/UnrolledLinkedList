@@ -92,8 +92,11 @@ void UnrolledLinkedList<T>::split(UnrolledLinkedListNode<T>* node)
     UnrolledLinkedListNode<T>* newNode = new UnrolledLinkedListNode<T>(mNodeSize);
     int j=0;
 
+    int startIndex = node->mLength/2;
+    int endIndex = node->mLength;
+
     //moving half of the firts node to a new one
-    for(int i=node->mLength/2; i<node->mLength; i++)
+    for(int i=startIndex; i<endIndex; i++)
         newNode->mNodeArray[j++]=node->mNodeArray[i];
 
     //redefining nodes lenghts
@@ -112,9 +115,8 @@ void UnrolledLinkedList<T>::split(UnrolledLinkedListNode<T>* node)
 template<typename T>
 void UnrolledLinkedList<T>::pasteAtIndex(T value, int index)
 {
-    if(index<0)
+    if(index<0 or index>size)
         throw std::invalid_argument("Invalid index");
-    UnrolledLinkedListNode<T>* curPos=mHead;
 
     //create a node if list has no one
     if(mHead == nullptr)
@@ -127,11 +129,28 @@ void UnrolledLinkedList<T>::pasteAtIndex(T value, int index)
         return;
     }
 
+    UnrolledLinkedListNode<T>* curPos;
+
     //searching for a proper node by index
-    while(curPos->mLength<index and curPos->mNext!=nullptr)
+    if(index<=size/2)
     {
-        index-=curPos->mLength;
-        curPos=curPos->mNext;
+        curPos=mHead;
+        while(curPos->mLength<index and curPos->mNext!=nullptr)
+        {
+            index-=curPos->mLength;
+            curPos=curPos->mNext;
+        }
+    }
+    else
+    {
+        index = size - index - 1;
+        curPos=mTail;
+        while(curPos->mLength<index and curPos->mPrev!=nullptr)
+        {
+            index-=curPos->mLength;
+            curPos=curPos->mPrev;
+        }
+        index=curPos->mLength-index - 1;
     }
 
     //too big index
@@ -192,11 +211,27 @@ void UnrolledLinkedList<T>::removeAtIndex(int index)
     UnrolledLinkedListNode<T>* curPos=mHead;
 
     //searching for a proper node by index
-    while(curPos->mLength<=index and curPos->mNext!=nullptr)
+    if(index<=size/2)
     {
-        index-=curPos->mLength;
-        curPos=curPos->mNext;
+        curPos=mHead;
+        while(curPos->mLength<=index and curPos->mNext!=nullptr)
+        {
+            index-=curPos->mLength;
+            curPos=curPos->mNext;
+        }
     }
+    else
+    {
+        index = size - index - 1;
+        curPos=mTail;
+        while(curPos->mLength<=index and curPos->mPrev!=nullptr)
+        {
+            index-=curPos->mLength;
+            curPos=curPos->mPrev;
+        }
+        index=curPos->mLength-index - 1;
+    }
+    
     //too big index
     if(index>curPos->mLength)
         throw std::invalid_argument("Invalid index");
@@ -283,17 +318,16 @@ template<typename T>
 void UnrolledLinkedList<T>::print()
 {
     UnrolledLinkedListNode<T>* cur=mHead;
-    std::cout<<"Size: "<<mNodeSize<<" , length: "<<size<<std::endl;
-
+    
     //iterating on nodes
     for(int i=0; cur!=nullptr; i++)
     {
-        std::cout<<"Node "<<i<<": ("<<cur->mLength<<") [";
+        std::cout<<"Node "<<i<<":";
 
         //printing nodes array
         for(int j=0;j<cur->mLength;j++)
-            std::cout<<"_"<<cur->mNodeArray[j];
-        std::cout<<" ]"<<std::endl;
+            std::cout<<" "<<cur->mNodeArray[j];
+        std::cout<<std::endl;
 
         cur=cur->mNext;
     }
