@@ -74,9 +74,19 @@ template<typename T>
 int UnrolledLinkedList<T>::find(T value)
 {
     //searching for <value> by all arrays iterating
-    for(int i=0;i<size;i++)
-        if((*this)[i]==value)
-            return i;
+    int index=0;
+    UnrolledLinkedListNode<T>* curNode = mHead;
+    while(curNode!=nullptr)
+    {
+        for(int i=0; i<curNode->mLength; i++)
+        {
+            if(curNode->mNodeArray[i]==value)
+                return index;
+            index++;
+        }
+        curNode=curNode->mNext;
+    }
+    
     return -1;
 }
 
