@@ -11,6 +11,7 @@ private:
     UnrolledLinkedListNode<T>* mTail;
     int mNodeSize;
     int mNodeNum;
+    int size;
 
 public:
     UnrolledLinkedList(int optimalNodeSize);
@@ -22,14 +23,17 @@ public:
 
     //returns index of the <value> if in list, otherwise -1
     int find(T value);
-
+    
     //splits <node> on two parts, adding a new node
     void split(UnrolledLinkedListNode<T>* node);
 
     void pushBack(T value);
+
     void popBack();
     //pastes a <value> on the <index> in the list
     void pasteAtIndex(T value, int index);
+
+    void resize(int newNodeSize);
 
     //removes node pointed by <node>
     void removeNode(UnrolledLinkedListNode<T>* node);

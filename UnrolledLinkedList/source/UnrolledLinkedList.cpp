@@ -9,6 +9,7 @@ template<typename T>
 UnrolledLinkedList<T>::UnrolledLinkedList(int optimalNodeSize):mNodeSize{optimalNodeSize}
 {
     mNodeNum=0;
+    size=0;
     mHead = nullptr;
     mTail=nullptr;
 }
@@ -24,13 +25,17 @@ UnrolledLinkedList<T>::UnrolledLinkedList(std::vector<T> values, int optimalNode
             mTail = new UnrolledLinkedListNode<T>(mNodeSize);
             mHead=mTail;
             mHead->insert(value, 0);
+            size++;
             mNodeNum=1;
             continue;
         }
 
         //if node has empty space add to an end of the node
         if(mTail->mLength<mNodeSize)
+        {
             mTail->pushBack(value);
+            size++;
+        }
         else
         //otherwise create a new node withous splitting an old one
         {
@@ -38,6 +43,7 @@ UnrolledLinkedList<T>::UnrolledLinkedList(std::vector<T> values, int optimalNode
             newTail->mPrev=mTail;
             mTail->mNext=newTail;
             newTail->insert(value, 0);
+            size++;
             mTail=newTail;
             mNodeNum++;
         }
@@ -55,29 +61,20 @@ UnrolledLinkedList<T>::~UnrolledLinkedList()
         mTail->remove();
         mTail=temp;
     }
+    size=0;
 }
 
 template<typename T>
 int UnrolledLinkedList<T>::length()
 {
-    int length=0;
-    UnrolledLinkedListNode<T>* cur=mHead;
-
-    /**summing all nodes length
-     * without array iterations**/
-    while(cur!=nullptr)
-    {
-        length+=cur->mLength;
-        cur=cur->mNext;
-    }
-    return length;
+    return size;
 }
 
 template<typename T>
 int UnrolledLinkedList<T>::find(T value)
 {
     //searching for <value> by all arrays iterating
-    for(int i=0;i<this->length();i++)
+    for(int i=0;i<size;i++)
         if((*this)[i]==value)
             return i;
     return -1;
@@ -86,7 +83,7 @@ int UnrolledLinkedList<T>::find(T value)
 template<typename T>
 void UnrolledLinkedList<T>::pushBack(T value)
 {
-    this->pasteAtIndex(value, this->length());
+    this->pasteAtIndex(value, this->size);
 }
 
 template<typename T>
@@ -95,8 +92,11 @@ void UnrolledLinkedList<T>::split(UnrolledLinkedListNode<T>* node)
     UnrolledLinkedListNode<T>* newNode = new UnrolledLinkedListNode<T>(mNodeSize);
     int j=0;
 
+    int startIndex = node->mLength/2;
+    int endIndex = node->mLength;
+
     //moving half of the firts node to a new one
-    for(int i=node->mLength/2; i<node->mLength; i++)
+    for(int i=startIndex; i<endIndex; i++)
         newNode->mNodeArray[j++]=node->mNodeArray[i];
 
     //redefining nodes lenghts
@@ -115,9 +115,8 @@ void UnrolledLinkedList<T>::split(UnrolledLinkedListNode<T>* node)
 template<typename T>
 void UnrolledLinkedList<T>::pasteAtIndex(T value, int index)
 {
-    if(index<0)
+    if(index<0 or index>size)
         throw std::invalid_argument("Invalid index");
-    UnrolledLinkedListNode<T>* curPos=mHead;
 
     //create a node if list has no one
     if(mHead == nullptr)
@@ -125,15 +124,33 @@ void UnrolledLinkedList<T>::pasteAtIndex(T value, int index)
         mHead = new UnrolledLinkedListNode<T>(mNodeSize);
         mTail=mHead;
         mHead->insert(value, 0);
+        size++;
         mNodeNum=1;
         return;
     }
 
+    UnrolledLinkedListNode<T>* curPos;
+
     //searching for a proper node by index
-    while(curPos->mLength<index and curPos->mNext!=nullptr)
+    if(index<=size/2)
     {
-        index-=curPos->mLength;
-        curPos=curPos->mNext;
+        curPos=mHead;
+        while(curPos->mLength<index and curPos->mNext!=nullptr)
+        {
+            index-=curPos->mLength;
+            curPos=curPos->mNext;
+        }
+    }
+    else
+    {
+        index = size - index - 1;
+        curPos=mTail;
+        while(curPos->mLength<index and curPos->mPrev!=nullptr)
+        {
+            index-=curPos->mLength;
+            curPos=curPos->mPrev;
+        }
+        index=curPos->mLength-index - 1;
     }
 
     //too big index
@@ -159,6 +176,7 @@ void UnrolledLinkedList<T>::pasteAtIndex(T value, int index)
         }
         
         curPos->insert(value, index);
+        size++;
     }
 }
 
@@ -193,18 +211,33 @@ void UnrolledLinkedList<T>::removeAtIndex(int index)
     UnrolledLinkedListNode<T>* curPos=mHead;
 
     //searching for a proper node by index
-    while(curPos->mLength<=index and curPos->mNext!=nullptr)
+    if(index<=size/2)
     {
-        index-=curPos->mLength;
-        curPos=curPos->mNext;
+        curPos=mHead;
+        while(curPos->mLength<=index and curPos->mNext!=nullptr)
+        {
+            index-=curPos->mLength;
+            curPos=curPos->mNext;
+        }
     }
+    else
+    {
+        index = size - index - 1;
+        curPos=mTail;
+        while(curPos->mLength<=index and curPos->mPrev!=nullptr)
+        {
+            index-=curPos->mLength;
+            curPos=curPos->mPrev;
+        }
+        index=curPos->mLength-index - 1;
+    }
+    
     //too big index
     if(index>curPos->mLength)
         throw std::invalid_argument("Invalid index");
     else
     {
         curPos->cut(index);
-
         //if node was made empty, remove one
         if(curPos->mLength==0)
             removeNode(curPos);
@@ -237,7 +270,42 @@ void UnrolledLinkedList<T>::removeAtIndex(int index)
                 removeNode(curPos->mNext);
             }
         }
+        size--;
     }
+}
+
+template<typename T>
+void UnrolledLinkedList<T>::resize(int newNodeSize)
+{
+    if(newNodeSize==mNodeSize)
+        return;
+    if(newNodeSize<=0)
+        throw std::length_error("Invalid new node size");
+    UnrolledLinkedListNode<T>* newHead = new UnrolledLinkedListNode<T>(newNodeSize);
+    UnrolledLinkedListNode<T>* cur = newHead;
+    int curIndex=0, newNodeNum=0;
+    for(int i=0; i<this->length(); i++)
+    {
+        if(curIndex>=newNodeSize)
+        {
+            UnrolledLinkedListNode<T>* newNode = new UnrolledLinkedListNode<T>(newNodeSize);
+            cur->mNext=newNode;
+            newNode->mPrev=cur;
+            cur=cur->mNext;
+            curIndex=0;
+            newNodeNum++;
+        }
+        cur->insert(this->operator[](i), curIndex++);
+    }
+    while(mHead!=nullptr)
+    {
+        mHead->remove();
+        mHead=mHead->mNext;
+    }
+    mHead=newHead;
+    mTail=cur;
+    mNodeSize=newNodeSize;
+    mNodeNum=newNodeNum;
 }
 
 template<typename T>
@@ -250,17 +318,15 @@ template<typename T>
 void UnrolledLinkedList<T>::print()
 {
     UnrolledLinkedListNode<T>* cur=mHead;
-    std::cout<<std::endl<<"Size: "<<mNodeSize<<std::endl;
-
     //iterating on nodes
     for(int i=0; cur!=nullptr; i++)
     {
-        std::cout<<"Node "<<i<<": ("<<cur->mLength<<") [";
+        std::cout<<"Node "<<i<<":";
 
         //printing nodes array
         for(int j=0;j<cur->mLength;j++)
-            std::cout<<"_"<<cur->mNodeArray[j];
-        std::cout<<" ]"<<std::endl;
+            std::cout<<" "<<cur->mNodeArray[j];
+        std::cout<<std::endl;
 
         cur=cur->mNext;
     }
