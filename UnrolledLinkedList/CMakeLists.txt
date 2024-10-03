@@ -40,4 +40,4 @@ target_include_directories(test PRIVATE ${INCLUDE_DIRECTORIES})
 target_link_libraries(main UnrolledLL)
 
 #linking test with gtest lib
-target_link_libraries(test UnrolledLL gtest gmock pthread)
+target_link_libraries(test UnrolledLL gtest pthread)
