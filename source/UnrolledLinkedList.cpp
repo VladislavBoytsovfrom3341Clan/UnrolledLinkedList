@@ -203,7 +203,6 @@ void UnrolledLinkedList<T>::removeAtIndex(int index)
         throw std::invalid_argument("Invalid index");
     else
     {
-        std::cout<<"ind: "<<index<<"\n";
         curPos->cut(index);
 
         //if node was made empty, remove one
@@ -251,7 +250,7 @@ template<typename T>
 void UnrolledLinkedList<T>::print()
 {
     UnrolledLinkedListNode<T>* cur=mHead;
-    std::cout<<"Size: "<<mNodeSize<<std::endl;
+    std::cout<<std::endl<<"Size: "<<mNodeSize<<std::endl;
 
     //iterating on nodes
     for(int i=0; cur!=nullptr; i++)
@@ -265,6 +264,7 @@ void UnrolledLinkedList<T>::print()
 
         cur=cur->mNext;
     }
+    std::cout<<std::endl;
 }
 
 template<typename T>
